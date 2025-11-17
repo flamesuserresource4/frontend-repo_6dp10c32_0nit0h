@@ -2,24 +2,47 @@ import { useState } from 'react'
 
 function Contact() {
   const [status, setStatus] = useState(null)
+  const [errorMsg, setErrorMsg] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
     const payload = Object.fromEntries(form.entries())
 
+    // Basic front-end validation
+    if (!payload.name || !payload.email || !payload.message) {
+      setStatus('error')
+      setErrorMsg('Please fill in your name, email, and a short message.')
+      return
+    }
+
+    const baseUrl = import.meta.env.VITE_BACKEND_URL || `${window.location.origin.replace('3000','8000')}`
+
     try {
       setStatus('loading')
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, {
+      setErrorMsg('')
+      const res = await fetch(`${baseUrl}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
-      if (!res.ok) throw new Error('Failed to submit')
+
+      if (!res.ok) {
+        let detail = 'Failed to submit'
+        try {
+          const data = await res.json()
+          detail = data?.detail || JSON.stringify(data)
+        } catch {
+          // ignore parse errors
+        }
+        throw new Error(detail)
+      }
+
       setStatus('success')
       e.currentTarget.reset()
     } catch (e) {
       setStatus('error')
+      setErrorMsg(e?.message || 'Something went wrong. Please try again.')
     }
   }
 
@@ -57,10 +80,11 @@ function Contact() {
           <textarea name="message" required rows={4} className="px-3 py-2 rounded-lg ring-1 ring-gray-200 focus:ring-emerald-400 outline-none" />
         </div>
         <div className="md:col-span-2 flex items-center gap-4">
-          <button className="px-6 py-3 rounded-lg bg-emerald-600 text-white font-semibold shadow hover:bg-emerald-700 transition">Submit</button>
-          {status === 'loading' && <span className="text-gray-500">Sending...</span>}
+          <button className="px-6 py-3 rounded-lg bg-emerald-600 text-white font-semibold shadow hover:bg-emerald-700 transition" disabled={status==='loading'}>
+            {status === 'loading' ? 'Sending…' : 'Submit'}
+          </button>
           {status === 'success' && <span className="text-emerald-600">Thanks! We'll be in touch shortly.</span>}
-          {status === 'error' && <span className="text-red-600">Something went wrong. Please try again.</span>}
+          {status === 'error' && <span className="text-red-600">{errorMsg || 'Something went wrong. Please try again.'}</span>}
         </div>
       </form>
     </section>
