@@ -21,14 +21,15 @@ function Hero() {
           </div>
           <div className="mt-8 text-sm text-gray-500">Licensed • Insured • Eco-friendly practices</div>
         </div>
-        <div className="relative h-80 md:h-[28rem] rounded-2xl overflow-hidden shadow-xl ring-1 ring-emerald-100">
+        <div className="relative h-80 md:h-[28rem] rounded-2xl overflow-hidden shadow-xl ring-1 ring-emerald-100 bg-emerald-50">
           <img
-            src="https://images.unsplash.com/photo-1518732714860-b62714ce0b18?q=80&w=1600&auto=format&fit=crop"
-            alt="Lush green garden with stone path"
+            src="/hero.svg"
+            alt="Lush green garden illustration"
             className="w-full h-full object-cover"
-            loading="lazy"
+            loading="eager"
+            onError={(e) => { e.currentTarget.style.display = 'none' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
         </div>
       </div>
     </section>

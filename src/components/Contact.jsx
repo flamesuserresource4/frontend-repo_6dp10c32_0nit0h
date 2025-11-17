@@ -6,7 +6,8 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const form = new FormData(e.currentTarget)
+    const formEl = e.currentTarget
+    const form = new FormData(formEl)
     const payload = Object.fromEntries(form.entries())
 
     // Basic front-end validation
@@ -39,7 +40,7 @@ function Contact() {
       }
 
       setStatus('success')
-      e.currentTarget.reset()
+      formEl.reset()
     } catch (e) {
       setStatus('error')
       setErrorMsg(e?.message || 'Something went wrong. Please try again.')
